@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: {{ .Values.replicaCount}}
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: {{ .Values.image.repo}}
+        image: "{{ .Values.image.repo}}:{{ .Values.image.tag}}"
+        ports:
+        - containerPort: 80
+        env:
+          - name: LOG_LEVEL
+            valueFrom:
+              configMapKeyRef:
+                name: app-config
+                key: LOG_LEVEL
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.probe.liveness.path}}
+            port: {{ .Values.probe.liveness.port}}
+          initialDelaySeconds: {{ .Values.probe.liveness.delay}}
+        readinessProbe:
+          httpGet:
+            port: {{ .Values.probe.readiness.port}}
+            path: {{ .Values.probe.readiness.path}}
+          initialDelaySeconds: {{ .Values.probe.readiness.delay}}

@@ -1,0 +1,22 @@
+
+#deployment
+replicaCount: 3
+
+image:
+  repo: nginx
+  tag: latest 
+
+
+probe:
+  liveness: 
+    path: /
+    port: 80
+    delay: 20
+  readiness: 
+    path: /
+    port: 80
+    delay: 30
+
+# configmap
+config: 
+  loglevel: warn
